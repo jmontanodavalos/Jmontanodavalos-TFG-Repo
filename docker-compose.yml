@@ -1,0 +1,72 @@
+services:
+  backend:
+    build:
+      context: ./symfony-backend
+      dockerfile: ./docker/php/Dockerfile
+    container_name: symfony_backend
+    restart: unless-stopped
+    working_dir: /var/www/app
+    volumes:
+      - ./symfony-backend:/var/www/app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "
+        until pg_isready -h db -U symfony -d symfony_db; do
+          sleep 2;
+        done;
+        
+        if [ ! -f /var/www/app/vendor/autoload.php ]; then
+          composer install;
+        fi
+        
+        php bin/console doctrine:database:create --if-not-exists;
+        php bin/console doctrine:schema:update --force;
+
+        if symfony server:status > /dev/null 2>&1; then
+          symfony server:stop;
+        fi
+
+        symfony server:start --no-tls --port=8000 --allow-all-ip;
+      "
+
+
+  db:
+    image: postgres:13
+    container_name: symfony_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: symfony
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: symfony_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U symfony -d symfony_db"]
+      interval: 10s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./angular-frontend
+      dockerfile: Dockerfile
+    container_name: angular_frontend
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./angular-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    command: ["sh", "-c", "npm install && ng serve --host 0.0.0.0 --poll 2000 --watch"]
+
+
+volumes:
+  pgdata:
