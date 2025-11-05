@@ -40,9 +40,16 @@ class User
     #[ORM\OneToMany(targetEntity: Booking::class, mappedBy: 'student')]
     private Collection $user_bookings;
 
+    /**
+     * @var Collection<int, Subject>
+     */
+    #[ORM\ManyToMany(targetEntity: Subject::class, inversedBy: 'users')]
+    private Collection $subjects;
+
     public function __construct()
     {
         $this->user_bookings = new ArrayCollection();
+        $this->subjects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -147,6 +154,33 @@ class User
             if ($userBooking->getStudent() === $this) {
                 $userBooking->setStudent(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subject>
+     */
+    public function getSubjects(): Collection
+    {
+        return $this->subjects;
+    }
+
+    public function addSubject(Subject $subject): static
+    {
+        if (!$this->subjects->contains($subject)) {
+            $this->subjects->add($subject);
+            $subject->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubject(Subject $subject): static
+    {
+        if ($this->subjects->removeElement($subject)) {
+            $subject->removeUser($this);
         }
 
         return $this;
