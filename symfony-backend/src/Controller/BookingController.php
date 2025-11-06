@@ -34,7 +34,7 @@ class BookingController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'booking_show', methods: ['GET'])] // Para pruebas
+    #[Route('/{id<\d+>}', name: 'booking_show', methods: ['GET'])] // Para pruebas
     public function show(int $id, EntityManagerInterface $em): JsonResponse
     {
         $booking = $em->getRepository(Booking::class)->find($id);
@@ -174,7 +174,7 @@ class BookingController extends AbstractController
         $booking = new Booking();
         $booking->setStudent($student);
         $booking->setSubject($subject);
-        $booking->setTimeslot($timeslot);
+        $booking->setTimeslotId($timeslot);
         $booking->setDate(new \DateTime($data['date']));
 
         $em->persist($booking);

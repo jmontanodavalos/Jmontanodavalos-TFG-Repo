@@ -6,10 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -50,6 +52,12 @@ class User
     {
         $this->user_bookings = new ArrayCollection();
         $this->subjects = new ArrayCollection();
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // Symfony usa este método en lugar de getUsername() para identificar al usuario
+        return (string) $this->email;
     }
 
     public function getId(): ?int
@@ -95,7 +103,10 @@ class User
 
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // Garantiza que todos los usuarios tengan al menos ROLE_USER
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
@@ -185,4 +196,10 @@ class User
 
         return $this;
     }
+
+    public function eraseCredentials(): void
+    {
+
+    }
 }
+http://localhost:8000/api/users

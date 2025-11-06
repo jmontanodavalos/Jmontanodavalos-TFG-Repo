@@ -23,7 +23,7 @@ class UserController extends AbstractController
 
         $data = array_map(fn(User $u) => [
             'id' => $u->getId(),
-            'username' => $user->getUsername(),
+            'username' => $u->getUsername(),
             'fullname' => $u->getFullname(),
             'email' => $u->getEmail(),
             'roles' => $u->getRoles(),
@@ -49,7 +49,7 @@ class UserController extends AbstractController
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
             'phone' => $user->getPhone(),
-            'subjects' => array_map(fn($s) => $s->getName(), $u->getSubjects()->toArray())
+            'subjects' => array_map(fn($s) => $s->getName(), $user->getSubjects()->toArray())
         ]);
     }
 
