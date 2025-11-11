@@ -1,7 +1,13 @@
-<h1 class="text-primary font-sans text-4xl">
-  ¡Tailwind personalizado funcionando!
-</h1>
+<div class="relative min-h-[200vh] flex flex-col justify-between bg-gradient-to-br from-[#fdc855] to-[#fcdf8f] overflow-hidden">
+   <div
+    class="absolute inset-0 bg-center bg-no-repeat bg-contain opacity-30 z-0"
+    style="background-image: url('logo fondo.png');">
+  </div>
+  <app-header-component />
 
-<button class="bg-accent text-white font-bold py-2 px-4 rounded">
-  Botón
-</button>
+  <main class="flex-grow flex items-center justify-center z-10">
+    <router-outlet />
+  </main>
+
+  <app-footer-component />
+</div>

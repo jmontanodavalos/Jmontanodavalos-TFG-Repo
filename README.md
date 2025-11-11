@@ -67,3 +67,15 @@ docker compose down -v
 ⚠️ **Advertencia:** Esto eliminará todos los datos almacenados en la base de datos PostgreSQL. ⚠️ 
 
 ---
+
+## Comandos útiles
+
+- Para acceder al contenedor del Frontend Angular:
+```
+  docker exec -it angular_frontend sh
+```
+
+- Para acceder al contenedor del Backend Symfony:
+```
+docker exec -it symfony_backend bash
+```

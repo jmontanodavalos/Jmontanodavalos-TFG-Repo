@@ -53,9 +53,6 @@ class BookingController extends AbstractController
         ]);
     }
 
-    // =========================================================
-    // MÉTODO 1: Vista mensual (solo datos mínimos)
-    // =========================================================
     #[Route('/month', name: 'bookings_month', methods: ['GET'])]
     public function getMonth(Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -95,10 +92,6 @@ class BookingController extends AbstractController
         ]);
     }
 
-
-    // =========================================================
-    // MÉTODO 2: Vista diaria (detallado)
-    // =========================================================
     #[Route('/day', name: 'bookings_day', methods: ['GET'])]
     public function getDay(Request $request, EntityManagerInterface $em): JsonResponse
     {

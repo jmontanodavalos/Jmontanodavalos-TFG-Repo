@@ -12,10 +12,43 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 #[Route('/api/users')]
 class UserController extends AbstractController
 {
+    #[Route('/me', name: 'user_me', methods: ['GET'])]
+    public function me(UserInterface $user): JsonResponse
+    {
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'full_name' => $user->getFullName(),
+            'username' => $user->getUsername(),
+            'role' => $user->getRoles(),
+            'subjects' => array_map(fn($s) => $s->getName(), $user->getSubjects()->toArray())
+        ]);
+    }
+
+    #[Route('/logout', name: 'logout', methods: ['POST'])]
+    public function apiLogout(): JsonResponse
+    {
+        $response = new JsonResponse(['message' => 'Logged out successfully']);
+        // Borrar la cookie authToken (misma config que en el success handler)
+        $response->headers->clearCookie(
+            name: 'authToken',
+            path: '/',
+            domain: null,
+            secure: false,
+            httpOnly: true,
+            sameSite: 'Lax'
+        );
+
+        return $response;
+    }
+
+
     #[Route('', name: 'list_users', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
@@ -23,7 +56,7 @@ class UserController extends AbstractController
 
         $data = array_map(fn(User $u) => [
             'id' => $u->getId(),
-            'username' => $user->getUsername(),
+            'username' => $u->getUsername(),
             'fullname' => $u->getFullname(),
             'email' => $u->getEmail(),
             'roles' => $u->getRoles(),
@@ -34,7 +67,7 @@ class UserController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'me', methods: ['GET'])]
+    #[Route('/{id}', name: 'find_user', methods: ['GET'])]
     public function show(int $id, EntityManagerInterface $em): JsonResponse
     {
         $user = $em->getRepository(User::class)->find($id);
@@ -49,12 +82,12 @@ class UserController extends AbstractController
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
             'phone' => $user->getPhone(),
-            'subjects' => array_map(fn($s) => $s->getName(), $u->getSubjects()->toArray())
+            'subjects' => array_map(fn($s) => $s->getName(), $user->getSubjects()->toArray())
         ]);
     }
 
-    #[Route('', name: 'user_create', methods: ['POST'])]
-    public function create(
+    #[Route('/register', name: 'user_register', methods: ['POST'])]
+    public function register(
         Request $request,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher,
@@ -66,6 +99,12 @@ class UserController extends AbstractController
             return $this->json(['error' => 'Email y contraseña son obligatorios'], Response::HTTP_BAD_REQUEST);
         }
 
+        $existingUser = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+        if ($existingUser) {
+            return new JsonResponse(['error' => 'User already exists.'], Response::HTTP_CONFLICT);
+        }
+
+
         $user = new User();
         $user->setEmail($data['email']);
         $user->setFullname($data['fullname'] ?? '');
@@ -75,7 +114,6 @@ class UserController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
 
-        // Asociar asignaturas si vienen del front
         if (!empty($data['subjects'])) {
             $subjectRepo = $em->getRepository(\App\Entity\Subject::class);
             foreach ($data['subjects'] as $subjectId) {

@@ -1,0 +1,18 @@
+  <div class=" text-stone-200 text-xs font-medium md:text-sm
+         fixed top-2 right-0 z-50 flex flex-col items-end md:flex-row md:items-center md:absolute md:right-8 md:translate-x-0">
+
+    <div class="flex space-y-2 flex-col items-end md:gap-2 md:flex-row md:items-center">
+        <ng-container *ngIf="user as currentUser; else notLoggedIn">
+        <span class="w-auto text-end r-2">👋 Hola, {{ currentUser.full_name || currentUser.username }}</span>
+        <button (click)="logout()" class="px-1 py-1 md:px-3 md:py-2 text-xs md:text-sm btn-secondary">Cerrar sesión</button>
+        </ng-container>
+    </div>
+    
+    <ng-template #notLoggedIn>
+        <div class="flex flex-col items-center md:gap-2 space-y-1 md:space-y-0 md:flex-row md:items-center">
+            <button routerLink="/login" class="px-1 py-1 md:px-4 md:py-2 text-xs md:text-sm btn-primary mr-2">Iniciar sesión</button>
+            <button routerLink="/register" class="px-1 py-1 md:px-3 md:py-2 text-xs md:text-sm btn-secondary">Registrarse</button>
+        </div>
+    </ng-template>
+    
+  </div>
