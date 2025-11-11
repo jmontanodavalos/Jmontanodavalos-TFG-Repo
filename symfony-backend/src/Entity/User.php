@@ -30,8 +30,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    #[ORM\Column(length: 50)]
+   private ?string $password = null;
 
     #[ORM\Column]
     private ?int $phone = null;
@@ -139,6 +139,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials(): void {}
 
     /**
      * @return Collection<int, Booking>

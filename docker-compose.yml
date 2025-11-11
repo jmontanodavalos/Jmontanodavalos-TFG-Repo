@@ -15,17 +15,29 @@ services:
       - "8000:8000"
     command: >
       bash -c "
+        echo '==> Esperando a que la base de datos esté lista...';
         until pg_isready -h db -U symfony -d symfony_db; do
           sleep 2;
         done;
-        
+
+        echo '==> Comprobando dependencias de Composer...';
         if [ ! -f /var/www/app/vendor/autoload.php ]; then
           composer install;
         fi
-        
+
+        echo '==> Creando base de datos (si no existe)...';
         php bin/console doctrine:database:create --if-not-exists;
+
+        echo '==> Sincronizando esquema con las entidades...';
         php bin/console doctrine:schema:update --force;
 
+        echo '==> Cargando fixtures...';
+        php bin/console doctrine:fixtures:load --append --no-interaction || echo 'Fixtures ya cargadas';
+
+        echo '==> Ejecutando comando para crear admin...';
+        php bin/console app:create-admin || echo 'Error al ejecutar el comando app:create-admin';
+
+        echo '==> Iniciando servidor Symfony...';
         if symfony server:status > /dev/null 2>&1; then
           symfony server:stop;
         fi

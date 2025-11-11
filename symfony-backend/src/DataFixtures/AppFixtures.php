@@ -13,17 +13,21 @@ class AppFixtures extends Fixture
     {
         // --- Asignaturas ---
         $subjects = [
-            ['Matemáticas', 'Refuerzo y técnicas de cálculo'],
-            ['Inglés', 'Gramática y conversación'],
-            ['Lengua Castellana', 'Sintaxis, redacción y literatura'],
-            ['Historia', 'Historia universal y de España'],
+            1 => ['Matemáticas', 'Refuerzo y técnicas de cálculo'],
+            2 => ['Inglés', 'Gramática y conversación'],
+            3 => ['Lengua Castellana', 'Sintaxis, redacción y literatura'],
+            4 => ['Historia', 'Historia universal y de España'],
         ];
 
-        foreach ($subjects as [$name, $desc]) {
-            $subject = new Subject();
-            $subject->setName($name);
-            $subject->setDescription($desc);
-            $manager->persist($subject);
+        foreach ($subjects as $id => [$name, $desc]) {
+            $existing = $manager->getRepository(Subject::class)->find($id);
+            if (!$existing) {
+                $subject = new Subject();
+                $subject->setId($id);
+                $subject->setName($name);
+                $subject->setDescription($desc);
+                $manager->persist($subject);
+            }
         }
 
         // --- Bloques horarios ---
@@ -31,15 +35,15 @@ class AppFixtures extends Fixture
         $morningEnd   = new \DateTime('14:00');
         $afternoonStart = new \DateTime('16:00');
         $afternoonEnd   = new \DateTime('20:00');
-
-        $this->generateTimeslots($manager, $morningStart, $morningEnd);
-        $this->generateTimeslots($manager, $afternoonStart, $afternoonEnd);
+        $idCounter = 1;
+        $this->generateTimeslots($manager, $morningStart, $morningEnd, $idCounter);
+        $this->generateTimeslots($manager, $afternoonStart, $afternoonEnd, $idCounter);
 
         $manager->flush();
     }
 
     // Función para generar intervalos de 1 hora
-    private function generateTimeslots(ObjectManager $manager, \DateTime $start, \DateTime $end): void
+    private function generateTimeslots(ObjectManager $manager, \DateTime $start, \DateTime $end, int &$idCounter): void
     {
         $interval = new \DateInterval('PT1H'); // 1 hora
         $period = new \DatePeriod($start, $interval, $end);
@@ -47,11 +51,20 @@ class AppFixtures extends Fixture
         foreach ($period as $startTime) {
             $endTime = (clone $startTime)->add($interval);
 
-            $timeslot = new Timeslot();
-            $timeslot->setStartTime($startTime);
-            $timeslot->setEndTime($endTime);
+            $existing = $manager->getRepository(Timeslot::class)->findOneBy([
+                'startTime' => $startTime,
+                'endTime' => $endTime
+            ]);
 
-            $manager->persist($timeslot);
+            if (!$existing) {
+                $timeslot = new Timeslot();
+                $timeslot->setId($idCounter);
+                $timeslot->setStartTime($startTime);
+                $timeslot->setEndTime($endTime);
+                $manager->persist($timeslot);
+            }
+
+            $idCounter++;
         }
     }
 }

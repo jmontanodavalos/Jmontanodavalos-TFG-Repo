@@ -12,6 +12,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'], // Fuente predeterminada
+        roadbrush: ['KTF Roadbrush', 'sans-serif'],
+        times: ['"Times New Roman"', 'Times', 'serif']
       },
     },
   },
