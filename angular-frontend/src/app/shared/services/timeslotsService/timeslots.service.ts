@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SUBJECT_ROUTES } from '../../routes/subject-routes';
+import { TIMESLOT_ROUTES } from '../../routes/timeslots-routes';
 
-export interface Subject {
+export interface Timeslot {
     id: number;
-    name: string;
-    description?: string;
+    start_time: string;
+    end_time: string;
 }
 
 @Injectable({
     providedIn: 'root'
 })
-export class SubjectService {
+export class TimeslotsService {
 
     constructor(private http: HttpClient) { }
 
-    getSubjects(): Observable<Subject[]> {
-        return this.http.get<Subject[]>(SUBJECT_ROUTES.getSubjects(),{
+    getTimeslots(): Observable<Timeslot[]> {
+        return this.http.get<Timeslot[]>(TIMESLOT_ROUTES.getTimeslots(),{
             withCredentials: true
         });
     }

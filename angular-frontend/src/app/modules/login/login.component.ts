@@ -19,6 +19,7 @@ export class LoginComponent {
   }
 
   onLogin(): void {
+    this.isLoading = true;
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
         this.isLoading = false;

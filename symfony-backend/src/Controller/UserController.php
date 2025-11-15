@@ -27,7 +27,11 @@ class UserController extends AbstractController
             'full_name' => $user->getFullName(),
             'username' => $user->getUsername(),
             'role' => $user->getRoles(),
-            'subjects' => array_map(fn($s) => $s->getName(), $user->getSubjects()->toArray())
+            'subjects' => array_map(fn(Subject $s) => [
+                'id' => $s->getId(),
+                'name' => $s->getName(),
+                'description' => $s->getDescription()
+            ], $user->getSubjects()->toArray())
         ]);
     }
 

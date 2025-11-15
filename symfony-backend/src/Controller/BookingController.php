@@ -13,10 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-#[Route('/api/bookings')] // Para pruebas
+#[Route('/api/bookings')] 
 class BookingController extends AbstractController
 {
-    #[Route('', name: 'list_bookings', methods: ['GET'])]
+    #[Route('', name: 'list_bookings', methods: ['GET'])] // Para pruebas
     public function index(EntityManagerInterface $em): JsonResponse
     {
         $bookings = $em->getRepository(Booking::class)->findAll();
@@ -28,13 +28,14 @@ class BookingController extends AbstractController
             'timeslot' => $b->getTimeslot()
                 ? $b->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $b->getTimeslot()->getEndTime()->format('H:i')
                 : null,
+            'timeslot_id' => $b->getTimeslot()?->getId(),
             'date' => $b->getDate()->format('Y-m-d'),
         ], $bookings);
 
         return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'booking_show', methods: ['GET'])] // Para pruebas
+    #[Route('/booking/{id}', name: 'booking_show', methods: ['GET'], requirements: ['id' => '\d+'])] // Para pruebas
     public function show(int $id, EntityManagerInterface $em): JsonResponse
     {
         $booking = $em->getRepository(Booking::class)->find($id);
@@ -49,6 +50,7 @@ class BookingController extends AbstractController
             'timeslot' => $booking->getTimeslot()
                 ? $booking->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $booking->getTimeslot()->getEndTime()->format('H:i')
                 : null,
+            'timeslot_id' => $booking->getTimeslot()?->getId(),   // <<< NECESARIO PARA EL FRONT
             'date' => $booking->getDate()->format('Y-m-d')
         ]);
     }
@@ -115,7 +117,7 @@ class BookingController extends AbstractController
             ->leftJoin('b.subject', 'sub')
             ->where('b.date = :date')
             ->setParameter('date', $date)
-            ->orderBy('t.startTime', 'ASC');
+            ->orderBy('t.start_time', 'ASC');
 
         $bookings = $qb->getQuery()->getResult();
 
@@ -126,6 +128,7 @@ class BookingController extends AbstractController
             'timeslot' => $b->getTimeslot()
                 ? $b->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $b->getTimeslot()->getEndTime()->format('H:i')
                 : null,
+            'timeslot_id' => $b->getTimeslot()?->getId(),
             'date' => $b->getDate()->format('Y-m-d'),
         ], $bookings);
 
@@ -167,7 +170,7 @@ class BookingController extends AbstractController
         $booking = new Booking();
         $booking->setStudent($student);
         $booking->setSubject($subject);
-        $booking->setTimeslot($timeslot);
+        $booking->setTimeslotId($timeslot);
         $booking->setDate(new \DateTime($data['date']));
 
         $em->persist($booking);
@@ -180,6 +183,7 @@ class BookingController extends AbstractController
                 'student' => $student->getFullname(),
                 'subject' => $subject->getName(),
                 'timeslot' => $timeslot->getStartTime()->format('H:i') . ' - ' . $timeslot->getEndTime()->format('H:i'),
+                'timeslot_id' => $booking->getTimeslot()?->getId(),   // <<< NECESARIO PARA EL FRONT
                 'date' => $booking->getDate()->format('Y-m-d'),
             ]
         ], Response::HTTP_CREATED);
@@ -225,6 +229,7 @@ class BookingController extends AbstractController
                 'timeslot' => $booking->getTimeslot()
                     ? $booking->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $booking->getTimeslot()->getEndTime()->format('H:i')
                     : null,
+                'timeslot_id' => $booking->getTimeslot()?->getId(),   // <<< NECESARIO PARA EL FRONT
                 'date' => $booking->getDate()->format('Y-m-d'),
             ]
         ]);

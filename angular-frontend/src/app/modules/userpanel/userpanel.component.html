@@ -1,1 +1,93 @@
-<p>userpanel works!</p>
+<div class="flex p-4 gap-12">
+  <!-- Calendario -->
+  <div class="w-1/3">
+   <div class="flex justify-between items-center mb-2">
+      <button (click)="prevMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&lt;</button>
+      <h2 class="text-xl font-bold">
+        {{ month | number:'2.0' }} - {{ year }} 
+      </h2>
+      <button (click)="nextMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&gt;</button>
+    </div>
+
+    <!-- Días de la semana -->
+    <div class="grid grid-cols-7 text-center font-semibold gap-5 mb-1">
+      <div>Lun</div>
+      <div>Mar</div>
+      <div>Mié</div>
+      <div>Jue</div>
+      <div>Vie</div>
+      <div>Sáb</div>
+      <div>Dom</div>
+    </div>
+
+    <!-- Días del mes -->
+    <div class="grid grid-cols-7 gap-x-6 gap-y-2">
+      <div *ngFor="let day of getDaysInMonth()"
+          class="py-1.5 px-4 flex items-center justify-center rounded
+                transition-transform duration-200"
+          [ngClass]="[
+            day ? getDayColor(day) : 'bg-transparent',
+            day && isToday(day) ? 'underline font-bold' : '',
+            day && isClosedDay(day) ? 'cursor-not-allowed' : day ? 'cursor-pointer hover:scale-110' : ''
+          ]"
+          (click)="day && !isClosedDay(day) && selectDay(day)">
+        {{ day ? day.split('-')[2] : '' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Franjas horarias / tarjetas -->
+  <div class="w-2/3">
+    <h2 class="text-xl font-bold mb-2" *ngIf="selectedDate">
+      Reservas del {{ selectedDate }}
+    </h2>
+
+    <div *ngIf="!selectedDate" class="text-gray-500">
+      Selecciona un día para ver las reservas
+    </div>
+
+    <div *ngIf="selectedDate" class="space-y-2">
+      <div *ngFor="let slot of timeslots" 
+           class="border p-3 rounded shadow flex items-center justify-between relative h-20">
+        <div class="font-semibold w-1/3">
+          {{ slot.start_time }} - {{ slot.end_time }}
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center">
+          <ng-container *ngIf="getBookingForTimeslot(slot); else freeSlot">
+            <span class="text-red-600 font-bold">
+              Reservado
+            </span>
+          </ng-container>
+
+          <ng-template #freeSlot>
+            <span *ngIf="selectedSlot !== slot" 
+                  class="text-green-600 font-bold cursor-pointer" 
+                  (click)="selectSlot(slot)">
+              Libre
+            </span>
+
+            <div *ngIf="selectedSlot === slot" class="flex items-center gap-2 px-6">
+              <select class="border rounded px-1 py-0.5 mr-4"
+                      [(ngModel)]="selectedSubjectId">
+                <option [ngValue]="null">-- Asignatura --</option>
+                <option *ngFor="let subj of userSubjects" [ngValue]="subj.id">{{ subj.name }}</option>
+              </select>
+              <button (click)="cancelSlotSelection()" 
+                      class="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                X
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 flex justify-center" *ngIf="selectedSlot">
+      <button (click)="makeBooking()" 
+              [disabled]="!slotSelected" 
+              class="px-4 py-2 bg-green-600 text-black rounded hover:bg-green-400 disabled:bg-gray-400 disabled:hover:cursor-not-allowed">
+        Reservar
+      </button>
+    </div>
+  </div>
+</div>

@@ -32,9 +32,11 @@
             <span *ngIf="!isLoading">Iniciar Sesión</span>
             <span *ngIf="isLoading">Iniciando...</span>
         </button>
-        <a routerLink="/register" class="text-sm text-center text-slate-700 hover:underline font-semibold">
-          ¿No tienes cuenta? Regístrate
-        </a>
+        <div class="mt-6 text-sm text-center">
+          <a routerLink="/register" class="text-sm text-center text-slate-700 hover:underline font-semibold">
+            ¿No tienes cuenta? Regístrate
+          </a>
+        </div>
       </div>
     </form>
   </div>
