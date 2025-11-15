@@ -14,10 +14,10 @@ class Timeslot
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $startTime = null;
+    private ?\DateTimeInterface $start_time = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $endTime = null;
+    private ?\DateTimeInterface $end_time = null;
 
     public function getId(): ?int
     {
@@ -32,24 +32,24 @@ class Timeslot
 
     public function getStartTime(): ?\DateTimeInterface
     {
-        return $this->startTime;
+        return $this->start_time;
     }
 
-    public function setStartTime(\DateTimeInterface $startTime): static
+    public function setStartTime(\DateTimeInterface $start_time): static
     {
-        $this->startTime = $startTime;
+        $this->start_time = $start_time;
 
         return $this;
     }
 
     public function getEndTime(): ?\DateTimeInterface
     {
-        return $this->endTime;
+        return $this->end_time;
     }
 
-    public function setEndTime(\DateTimeInterface $endTime): static
+    public function setEndTime(\DateTimeInterface $end_time): static
     {
-        $this->endTime = $endTime;
+        $this->end_time = $end_time;
 
         return $this;
     }

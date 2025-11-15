@@ -48,19 +48,19 @@ class AppFixtures extends Fixture
         $interval = new \DateInterval('PT1H'); // 1 hora
         $period = new \DatePeriod($start, $interval, $end);
 
-        foreach ($period as $startTime) {
-            $endTime = (clone $startTime)->add($interval);
+        foreach ($period as $start_time) {
+            $end_time = (clone $start_time)->add($interval);
 
             $existing = $manager->getRepository(Timeslot::class)->findOneBy([
-                'startTime' => $startTime,
-                'endTime' => $endTime
+                'start_time' => $start_time,
+                'end_time' => $end_time
             ]);
 
             if (!$existing) {
                 $timeslot = new Timeslot();
                 $timeslot->setId($idCounter);
-                $timeslot->setStartTime($startTime);
-                $timeslot->setEndTime($endTime);
+                $timeslot->setStartTime($start_time);
+                $timeslot->setEndTime($end_time);
                 $manager->persist($timeslot);
             }
 

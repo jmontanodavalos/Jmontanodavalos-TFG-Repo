@@ -11,6 +11,7 @@ import { User } from '../../interfaces/user';
 })
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
+  private loadedSubject = new BehaviorSubject<boolean>(false);
   constructor(private http: HttpClient) { }
 
   register(data : RegisterDTO) {
@@ -27,11 +28,14 @@ export class AuthService {
   loadUser() {
     this.http.get<User>(AUTH_ROUTES.me(), { withCredentials: true }).subscribe({
       next: user => {
+        console.log('Usuario cargado:', user);
         this.userSubject.next(user);
+        this.loadedSubject.next(true);
       },
       error: err => {
         console.warn('Error loading user:', err);
         this.userSubject.next(null);
+        this.loadedSubject.next(true);
       }
     });
   }
@@ -47,6 +51,10 @@ export class AuthService {
 
   get currentUser$(): Observable<User | null> {
     return this.userSubject.asObservable();
+  }
+
+  get loaded$(): Observable<boolean> {
+    return this.loadedSubject.asObservable();
   }
 
 }
