@@ -1,12 +1,10 @@
-<div class="w-full">
+<div class="flex flex-col gap-2">
   <!-- Header -->
   <div class="flex justify-between items-center mb-2">
     <button (click)="prevMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&lt;</button>
-
     <h2 class="text-xl font-bold">
       {{ month | number:'2.0' }} - {{ year }}
     </h2>
-
     <button (click)="nextMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&gt;</button>
   </div>
 
