@@ -25,6 +25,15 @@ export class AuthStatusComponent implements OnInit {
     }, 200);
   }
 
+  goToDashboard() {
+    if (!this.user) return;
+    if (this.user.role?.includes('ROLE_ADMIN')) {
+      this.router.navigate(['/admin-dashboard']);
+    } else {
+      this.router.navigate(['/user-dashboard']);
+    }
+  }
+
   logout() {
     this.isLoading = true;
     this.authService.logout().subscribe({

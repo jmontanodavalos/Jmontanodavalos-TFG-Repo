@@ -25,6 +25,10 @@ export class AuthService {
     );
   }
 
+  list(): Observable<User[]> {
+    return this.http.get<User[]>(AUTH_ROUTES.list(), { withCredentials: true });
+  }
+
   loadUser() {
     this.http.get<User>(AUTH_ROUTES.me(), { withCredentials: true }).subscribe({
       next: user => {

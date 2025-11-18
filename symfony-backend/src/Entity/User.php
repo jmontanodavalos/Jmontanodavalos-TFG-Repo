@@ -54,12 +54,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->subjects = new ArrayCollection();
     }
 
-    public function getUserIdentifier(): string
-    {
-        // Symfony usa este método en lugar de getUsername() para identificar al usuario
-        return (string) $this->email;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -104,7 +98,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // Garantiza que todos los usuarios tengan al menos ROLE_USER
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
@@ -204,9 +197,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function eraseCredentials(): void
-    {
-
-    }
 }
-http://localhost:8000/api/users

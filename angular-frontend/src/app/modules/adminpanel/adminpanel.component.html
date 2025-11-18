@@ -1,1 +1,104 @@
-<p>adminpanel works!</p>
+<div class="flex p-4 gap-12 w-full pt-28">
+  <!-- Calendario -->
+  <div class="max-w-[250px]">
+    <app-calendar
+      [days]="days"
+      [closedDays]="closedDays"
+      (daySelected)="selectDay($event)"
+      (monthChanged)="onMonthChanged($event)">
+    </app-calendar>
+  </div>
+
+  <!-- Timeslots -->
+  <div class="flex-1 min-w-[600px]">
+    <h2 class="text-xl font-bold mb-2" *ngIf="selectedDate">
+      Reservas del {{ selectedDate }}
+    </h2>
+
+    <div *ngIf="!selectedDate" class="text-gray-500 font-bold text-center pb-3">
+      Selecciona un día para ver las reservas
+    </div>
+
+    <div class="space-y-2">
+
+      <!-- Tarjeta por cada timeslot -->
+      <div *ngFor="let slot of timeslots"
+           class="border p-4 rounded shadow flex items-center justify-between relative h-24 w-full">
+
+        <div class="font-semibold w-1/3">
+          {{ selectedDate ? (slot.start_time + ' - ' + slot.end_time) : '' }}
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center">
+          <ng-container *ngIf="selectedDate">
+
+            <!-- SI EL SLOT ESTÁ RESERVADO -->
+            <ng-container *ngIf="getBookingForTimeslot(slot) as booking; else freeSlot">
+
+              <!-- EDITAR RESERVA -->
+              <span *ngIf="selectedSlot !== slot"
+                    class="text-blue-600 font-bold cursor-pointer"
+                    (click)="editBooking(slot, booking)">
+                {{ booking.student }} — {{ booking.subject }}
+              </span>
+
+              <!-- BORRAR RESERVA -->
+              <button
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                (click)="deleteBooking(booking.id); $event.stopPropagation();">
+                X
+              </button>
+
+            </ng-container>
+
+            <!-- SI EL SLOT ESTÁ LIBRE -->
+            <ng-template #freeSlot>
+              <!-- CREAR RESERVA -->
+              <span *ngIf="selectedSlot !== slot"
+                    class="text-green-600 font-bold cursor-pointer"
+                    (click)="selectSlot(slot)">
+                Libre
+              </span>
+            </ng-template>
+            <!-- CREACIÓN/EDICIÓN RESERVA -->
+            <div *ngIf="selectedSlot === slot" class="flex items-center gap-4 pl-20">
+
+              <!-- SELECTOR DE USUARIOS -->
+              <select class="border rounded px-2 py-1"
+                      [(ngModel)]="selectedStudentId"
+                      (change)="onStudentSelected()">
+                <option [ngValue]="null">-- Estudiante --</option>
+                <option *ngFor="let stu of allStudents" [ngValue]="stu.id">
+                  {{ stu.username }}
+                </option>
+              </select>
+
+              <!-- SELECTOR DE ASIGNATURAS DEL USUARIO SELECCIONADO -->
+              <select class="border rounded px-2 py-1"
+                      [(ngModel)]="selectedSubjectId"
+                      [disabled]="selectedStudentSubjects.length === 0">
+                <option [ngValue]="null">-- Asignatura --</option>
+                <option *ngFor="let subj of selectedStudentSubjects" [ngValue]="subj.id">
+                  {{ subj.name }}
+                </option>
+              </select>
+
+              <button (click)="cancelSlotSelection()"
+                      class="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                X
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 flex justify-center">
+      <button (click)="makeBooking()"
+              [disabled]="!selectedStudentId || !selectedSubjectId"
+              class="px-4 py-2 bg-green-600 text-black rounded hover:bg-green-400 disabled:bg-gray-400">
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>

@@ -25,6 +25,7 @@ class BookingController extends AbstractController
             'id' => $b->getId(),
             'student' => $b->getStudent() ? $b->getStudent()->getFullname() : null,
             'subject' => $b->getSubject() ? $b->getSubject()->getName() : null,
+            'subject_id' => $b->getSubject() ? $b->getSubject()->getId(): null,
             'timeslot' => $b->getTimeslot()
                 ? $b->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $b->getTimeslot()->getEndTime()->format('H:i')
                 : null,
@@ -46,11 +47,12 @@ class BookingController extends AbstractController
         return $this->json([
             'id' => $booking->getId(),
             'student' => $booking->getStudent()?->getFullname(),
+            'student_id' => $booking->getStudent()?->getId(),
             'subject' => $booking->getSubject()?->getName(),
             'timeslot' => $booking->getTimeslot()
                 ? $booking->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $booking->getTimeslot()->getEndTime()->format('H:i')
                 : null,
-            'timeslot_id' => $booking->getTimeslot()?->getId(),   // <<< NECESARIO PARA EL FRONT
+            'timeslot_id' => $booking->getTimeslot()?->getId(),
             'date' => $booking->getDate()->format('Y-m-d')
         ]);
     }
@@ -124,7 +126,9 @@ class BookingController extends AbstractController
         $data = array_map(fn(Booking $b) => [
             'id' => $b->getId(),
             'student' => $b->getStudent()?->getFullname(),
+            'student_id' => $b->getStudent()?->getId(),
             'subject' => $b->getSubject()?->getName(),
+            'subject_id' => $b->getSubject()?->getId(),
             'timeslot' => $b->getTimeslot()
                 ? $b->getTimeslot()->getStartTime()->format('H:i') . ' - ' . $b->getTimeslot()->getEndTime()->format('H:i')
                 : null,
@@ -140,7 +144,7 @@ class BookingController extends AbstractController
     }
 
 
-    #[Route('', name: 'booking_create', methods: ['POST'])]
+    #[Route('/create', name: 'booking_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -189,7 +193,7 @@ class BookingController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'booking_update', methods: ['PUT'])]
+    #[Route('/update/{id}', name: 'booking_update', methods: ['PUT'])]
     public function update(int $id, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $booking = $em->getRepository(Booking::class)->find($id);
@@ -211,7 +215,7 @@ class BookingController extends AbstractController
 
         if (isset($data['timeslot_id'])) {
             $timeslot = $em->getRepository(Timeslot::class)->find($data['timeslot_id']);
-            if ($timeslot) $booking->setTimeslot($timeslot);
+            if ($timeslot) $booking->setTimeslotId($timeslot);
         }
 
         if (isset($data['date'])) {
@@ -235,7 +239,7 @@ class BookingController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'booking_delete', methods: ['DELETE'])]
+    #[Route('/delete/{id}', name: 'booking_delete', methods: ['DELETE'])]
     public function delete(int $id, EntityManagerInterface $em): JsonResponse
     {
         $booking = $em->getRepository(Booking::class)->find($id);
