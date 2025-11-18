@@ -1,0 +1,53 @@
+.
+├── angular-frontend
+│   ├── node_modules
+│   ├── public
+│   └── src
+│       ├── app
+│       │   ├── environments
+│       │   ├── modules
+│       │   │   ├── adminpanel
+│       │   │   ├── landing
+│       │   │   ├── login
+│       │   │   ├── register
+│       │   │   └── userpanel
+│       │   └── shared
+│       │       ├── components
+│       │       │   ├── auth_status
+│       │       │   ├── back_button
+│       │       │   ├── calendar
+│       │       │   ├── footer_component
+│       │       │   └── header-component
+│       │       ├── constants
+│       │       ├── interfaces
+│       │       ├── routes
+│       │       └── services
+│       │           ├── adminService
+│       │           ├── authService
+│       │           ├── bookingService
+│       │           ├── subjectService
+│       │           └── timeslotsService
+│       └── assets
+│           └── fonts
+└── symfony-backend
+    ├── assets
+    ├── bin
+    ├── config
+    ├── docker
+    ├── migrations
+    ├── public
+    ├── src
+    │   ├── Command
+    │   ├── Controller
+    │   ├── DataFixtures
+    │   ├── Entity
+    │   ├── EventListener
+    │   ├── Repository
+    │   └── Security
+    ├── templates
+    ├── tests
+    ├── translations
+    ├── var
+    └── vendor
+
+18 directories

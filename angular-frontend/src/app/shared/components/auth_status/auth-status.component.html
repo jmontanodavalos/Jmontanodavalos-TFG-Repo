@@ -1,17 +1,24 @@
   <div class=" text-stone-200 text-xs font-medium md:text-sm
-         fixed top-2 right-0 z-50 flex flex-col items-end md:flex-row md:items-center md:absolute md:right-8 md:translate-x-0">
+         fixed top-2 right-0 z-50 flex flex-col items-end md:flex-row md:items-center md:absolute md:right-2 md:translate-x-0">
 
-    <div class="flex space-y-2 flex-col items-end md:gap-2 md:flex-row md:items-center">
+    <div class="flex space-y-2 flex-col items-end mt-2 md:gap-2 md:flex-row md:items-center">
         <ng-container *ngIf="user as currentUser; else notLoggedIn">
-        <span class="w-auto text-end r-2">👋 Hola, {{ currentUser.full_name || currentUser.username }}</span>
-        <button (click)="logout()" class="px-1 py-1 md:px-3 md:py-2 text-xs md:text-sm btn-secondary">
-            <svg *ngIf="isLoading" class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            <span *ngIf="!isLoading">Cerrar Sesión</span>
-            <span *ngIf="isLoading">Cerrando Sesión...</span>
-        </button>
+            <div class="flex flex-col items-end space-y-1
+              md:flex-row md:items-center md:space-y-0 md:space-x-2">
+                <button 
+                    (click)="goToDashboard()" 
+                    class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-primary flex items-center">
+                        Hola, {{  currentUser.username }}
+                </button>
+                <button (click)="logout()" class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-secondary flex items-center">
+                    <svg *ngIf="isLoading" class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span *ngIf="!isLoading">Cerrar Sesión</span>
+                    <span *ngIf="isLoading">Cerrando Sesión...</span>
+                </button>
+            </div>
         </ng-container>
     </div>
     

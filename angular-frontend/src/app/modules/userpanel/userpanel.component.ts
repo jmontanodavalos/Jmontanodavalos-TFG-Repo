@@ -10,6 +10,7 @@ import { CalendarComponent } from '../../shared/components/calendar/calendar.com
 
 @Component({
   selector: 'app-userpanel',
+  standalone: true,
   imports: [ CommonModule, FormsModule, CalendarComponent ],
   templateUrl: './userpanel.component.html',
   styleUrl: './userpanel.component.css'
@@ -18,14 +19,14 @@ export class UserpanelComponent implements OnInit {
   selectedDate: string | null = null;
   selectedSlot: Timeslot | null = null;
   selectedSubjectId: number | null = null;
-  bookingsOfSelectedDay: Booking[] = [];
-  timeslots: Timeslot[] = [];
-  userSubjects: { id: number; name: string; description?: string }[] = [];
-  slotSelected = false;
   studentId = 0;
-
+  userSubjects: { id: number; name: string; description?: string }[] = [];
+  timeslots: Timeslot[] = [];
+  bookingsOfSelectedDay: Booking[] = [];
   days: { [date: string]: number } = {};
   closedDays: string[] = [];
+  slotSelected = false;
+  
 
   constructor(
     private authService: AuthService,
@@ -33,27 +34,68 @@ export class UserpanelComponent implements OnInit {
     private timeslotsService: TimeslotsService,
   ) {}
 
+  // INIT
+
   ngOnInit(): void {
     this.initTimeslots();
-    const today = new Date();
-    this.loadMonth(today.getFullYear(), today.getMonth() + 1);
+    this.initUserData();
+    this.initCalendar();
+  }
 
-
-    this.authService.currentUser$.subscribe(user => {
-      if (user) {
-        this.studentId = user.id;
-        if (user.subjects) {
-          this.userSubjects = user.subjects;
-        }
-      }
+  private initTimeslots() {
+    this.timeslotsService.getTimeslots().subscribe({
+      next: res => this.timeslots = res,
+      error: err => { console.error("Error cargando timeslots:", err); this.timeslots = []; }
     });
   }
 
-  onMonthChanged(event: { year: number; month: number }) {
-    this.loadMonth(event.year, event.month);
+  private initUserData() {
+    this.authService.currentUser$.subscribe(user => {
+      if (!user) return;
+
+      this.studentId = user.id;
+      this.userSubjects = user.subjects ?? [];
+    });
+  }
+
+  private initCalendar() {
+    const today = new Date();
+    this.loadMonth(today.getFullYear(), today.getMonth() + 1);
+  }
+
+  // CALENDARIO
+
+  onMonthChanged({ year, month }: { year: number; month: number }) {
+    this.loadMonth(year, month);
+    this.clearSelectedDay();
+  }
+
+  private loadMonth(year: number, month: number) {
+    this.bookingService.getMonth(month, year).subscribe({
+      next: res => this.days = res.days,
+      error: err => console.error("Error al cargar mes:", err)
+    });
+  }
+
+  private clearSelectedDay() {
     this.selectedDate = null;
     this.bookingsOfSelectedDay = [];
+    this.selectedSlot = null;
+    this.slotSelected = false;
   }
+
+  selectDay(date: string) {
+    this.selectedDate = date;
+
+    this.bookingService.getDay(date).subscribe({
+      next: res => {
+        this.bookingsOfSelectedDay = res.bookings;
+      },
+      error: err => console.error("❌ Error al cargar día:", err)
+    });
+  }
+
+  // TARJETAS TIMESLOTS
 
   selectSlot(slot: Timeslot) {
     this.selectedSlot = slot;
@@ -67,58 +109,68 @@ export class UserpanelComponent implements OnInit {
     this.slotSelected = false;
   }
 
-  selectSubject(subjectId: number | null) {
+  selectSubject(subjectId: number) {
     this.selectedSubjectId = subjectId;
   }
 
-  makeBooking() {
-    if (!this.selectedDate || !this.selectedSlot || !this.selectedSubjectId) return;
+  // RESERVA
 
-    const payload = {
-      student_id: this.studentId,
-      subject_id: this.selectedSubjectId,
-      timeslot_id: this.selectedSlot.id,
-      date: this.selectedDate
-    };
+  makeBooking() {
+    const validationError = this.validateBooking();
+
+    if (validationError) {
+      console.error(validationError);
+      return;
+    }
+
+    const payload = this.buildBookingPayload();
 
     this.bookingService.create(payload).subscribe({
-      next: res => {
-        console.log('Reserva realizada:', res);
-        this.selectDay(this.selectedDate!); // recarga reservas
-        this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) + 1;
-        this.slotSelected = false;
-        this.selectedSlot = null;
-        this.selectedSubjectId = null;
-      },
-      error: err => console.error('Error creando reserva:', err)
+      next: (res) => this.handleBookingSuccess(res),
+      error: (err) => console.error("Error al crear reserva:", err)
     });
   }
 
-  private loadMonth(year: number, month: number) {
-    this.bookingService.getMonth(month, year).subscribe({
-      next: res => this.days = res.days,
-      error: err => console.error("Error al cargar mes:", err)
-    });
+  private validateBooking(): string | null {
+    if (!this.selectedSubjectId) {
+      return "No se ha seleccionado asignatura.";
+    }
+
+    if (!this.selectedDate) {
+      return "No se ha seleccionado día.";
+    }
+
+    if (!this.selectedSlot) {
+      return "No se ha seleccionado horario.";
+    }
+    
+    return null;
   }
 
-  selectDay(date: string) {
-    this.selectedDate = date;
-    this.bookingService.getDay(date).subscribe({
-      next: res => this.bookingsOfSelectedDay = res.bookings,
-      error: err => console.error("Error al cargar día:", err)
-    });
+  private buildBookingPayload() {
+    return {
+      student_id: this.studentId,
+      subject_id: this.selectedSubjectId!,
+      timeslot_id: this.selectedSlot!.id,
+      date: this.selectedDate!
+    };
   }
 
-  private initTimeslots() {
-    this.timeslotsService.getTimeslots().subscribe({
-      next: res => this.timeslots = res,
-      error: err => { console.error("Error cargando timeslots:", err); this.timeslots = []; }
-    });
+  private handleBookingSuccess(res: any) {
+    console.log("Reserva creada correctamente:", res);
+    this.selectDay(this.selectedDate!);
+    this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) + 1;
+    this.cancelSlotSelection();
   }
+
+
+
+  // HTML
 
   getBookingForTimeslot(slot: Timeslot) {
     if (!this.bookingsOfSelectedDay || !slot) return null;
-    return this.bookingsOfSelectedDay.find(b => b.timeslot_id === slot.id) || null;
+    const booking = this.bookingsOfSelectedDay.find(b => b.timeslot_id === slot.id) || null;
+    return booking;
   }
-  
+
 }

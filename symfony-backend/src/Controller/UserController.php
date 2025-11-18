@@ -39,7 +39,6 @@ class UserController extends AbstractController
     public function apiLogout(): JsonResponse
     {
         $response = new JsonResponse(['message' => 'Logged out successfully']);
-        // Borrar la cookie authToken (misma config que en el success handler)
         $response->headers->clearCookie(
             name: 'authToken',
             path: '/',
@@ -53,7 +52,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('', name: 'list_users', methods: ['GET'])]
+    #[Route('/list', name: 'list_users', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
         $users = $em->getRepository(User::class)->findAll();
@@ -65,7 +64,11 @@ class UserController extends AbstractController
             'email' => $u->getEmail(),
             'roles' => $u->getRoles(),
             'phone' => $u->getPhone(),
-            'subjects' => array_map(fn($s) => $s->getName(), $u->getSubjects()->toArray())
+            'subjects' => array_map(fn(Subject $s) => [
+                'id' => $s->getId(),
+                'name' => $s->getName(),
+                'description' => $s->getDescription()
+            ], $u->getSubjects()->toArray())
         ], $users);
 
         return $this->json($data);
@@ -86,7 +89,11 @@ class UserController extends AbstractController
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
             'phone' => $user->getPhone(),
-            'subjects' => array_map(fn($s) => $s->getName(), $user->getSubjects()->toArray())
+            'subjects' => array_map(fn(Subject $s) => [
+                'id' => $s->getId(),
+                'name' => $s->getName(),
+                'description' => $s->getDescription()
+            ], $user->getSubjects()->toArray())
         ]);
     }
 
