@@ -7,11 +7,13 @@ import { TimeslotsService, Timeslot } from '../../shared/services/timeslotsServi
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
 import { AuthService } from '../../shared/services/authService/auth.service';
 import { User } from '../../shared/interfaces/user';
+import { ToastService } from '../../shared/services/toastService/toast.service';
+import { ConfirmModalService } from '../../shared/services/confirm-modalService/confirm-modal.service';
 
 @Component({
   selector: 'app-adminpanel',
   standalone: true,
-  imports: [CommonModule, FormsModule, CalendarComponent],
+  imports: [CommonModule, FormsModule, CalendarComponent, ],
   templateUrl: './adminpanel.component.html',
   styleUrl: './adminpanel.component.css'
 })
@@ -34,7 +36,9 @@ export class AdminpanelComponent implements OnInit {
   constructor(
     private bookingService: BookingService,
     private timeslotsService: TimeslotsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService,
+    private confirmModalService: ConfirmModalService,
   ) {}
 
   ngOnInit(): void {
@@ -100,7 +104,7 @@ export class AdminpanelComponent implements OnInit {
 
   makeBooking() {
     if (!this.selectedSlot || !this.selectedSubjectId || !this.selectedStudentId || !this.selectedDate) {
-      console.error("Faltan campos para crear la reserva");
+      this.toastService.showToast('Faltan campos para crear la reserva','error',3000);
       return;
     }
 
@@ -115,7 +119,7 @@ export class AdminpanelComponent implements OnInit {
     if (this.bookingBeingEdited) {
       this.bookingService.update(this.bookingBeingEdited.id, payload).subscribe({
         next: (res) => this.handleEditBookingSuccess(res),
-        error: err => console.error("Error actualizando reserva:", err)
+        error: err => this.toastService.showToast('Error actualizando la reserva','error',3000),
       });
 
       return;
@@ -124,12 +128,12 @@ export class AdminpanelComponent implements OnInit {
 
     this.bookingService.create(payload).subscribe({
       next: (res) => this.handleBookingSuccess(res),
-      error: err => console.error("Error creando reserva:", err)
+      error: err => this.toastService.showToast('Error creando reserva','error',3000),
     });
   }
 
   private handleBookingSuccess(res: any) {
-    console.log("Reserva creada correctamente:", res);
+    this.toastService.showToast('Reserva creada correctamente','success',3000);
     this.selectDay(this.selectedDate!);
     this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) + 1;
     this.cancelSlotSelection();
@@ -138,35 +142,36 @@ export class AdminpanelComponent implements OnInit {
   editBooking(slot: Timeslot, booking: Booking) {
     this.selectedSlot = slot;
     this.bookingBeingEdited = booking;
-    console.log("información reserva:", booking)
 
     this.selectedStudentId = booking.student_id;
 
     const stu = this.allStudents.find(s => s.id === this.selectedStudentId);
     this.selectedStudentSubjects = stu ? stu.subjects : [];
-    console.log("student_id", booking.student_id)
-    console.log("subject_id", booking.subject_id)
     this.selectedSubjectId = booking.subject_id;
   }
 
     private handleEditBookingSuccess(res: any) {
-    console.log("Reserva editada correctamente:", res);
+    this.toastService.showToast('Reserva editada correctamente','info',3000);
     this.selectDay(this.selectedDate!);
     this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0);
     this.cancelSlotSelection();
   }
 
-  deleteBooking(bookingId: number) {
-    if (!confirm("¿Seguro que quieres eliminar esta reserva?")) return;
+  async deleteBooking(bookingId: number) {
+    const confirmed = await this.confirmModalService.confirm(
+      "¿Seguro que quieres eliminar esta reserva?"
+    );
+
+    if (!confirmed) return;
 
     this.bookingService.delete(bookingId).subscribe({
       next: () => {
-        console.log("Reserva eliminada correctamente:");
+        this.toastService.showToast('Reserva eliminada correctamente','info',3000)
         this.selectDay(this.selectedDate!);
         this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) - 1;
         this.cancelSlotSelection();
       },
-      error: err => console.error("Error eliminando reserva:", err)
+      error: err => this.toastService.showToast('Error eliminando reserva','error',3000),
     });
   }
 
