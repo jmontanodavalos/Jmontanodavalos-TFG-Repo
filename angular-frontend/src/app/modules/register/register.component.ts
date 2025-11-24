@@ -6,6 +6,7 @@ import { AuthService } from '../../shared/services/authService/auth.service';
 import { RegisterDTO } from '../../shared/interfaces/RegisterDTO';
 import { BackButtonComponent } from '../../shared/components/back_button/back-button.component';
 import { SubjectService } from '../../shared/services/subjectService/subject.service';
+import { ToastService } from '../../shared/services/toastService/toast.service';
 
 @Component({
  selector: 'app-register',
@@ -15,7 +16,7 @@ import { SubjectService } from '../../shared/services/subjectService/subject.ser
    FormsModule,
    ReactiveFormsModule,
    RouterLink,
-   BackButtonComponent
+   BackButtonComponent,
  ],
  templateUrl: './register.component.html',
  styleUrls: []
@@ -32,7 +33,8 @@ export class RegisterComponent implements OnInit {
    private fb: FormBuilder,
    private auth: AuthService,
    private subjectService: SubjectService,
-   private router: Router
+   private router: Router,
+   private toastService: ToastService
  ) { }
 
  ngOnInit(): void {
@@ -61,7 +63,7 @@ export class RegisterComponent implements OnInit {
       },
       error: err => {
         this.isSubjectsLoading = false;
-        console.error('Error cargando subjects', err);
+        this.toastService.showToast('Error cargando asignaturas','error',3000);
       }
     });
   }

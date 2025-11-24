@@ -5,6 +5,8 @@ import { LoginDTO } from '../../interfaces/LoginDTO';
 import { AUTH_ROUTES } from '../../routes/auth-routes';
 import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { User } from '../../interfaces/user';
+import { Router } from '@angular/router';
+import { ToastService } from '../toastService/toast.service';
 
 @Injectable({
  providedIn: 'root'
@@ -23,6 +25,16 @@ export class AuthService {
       switchMap(() => this.http.get<User>(AUTH_ROUTES.me(), { withCredentials: true })),
       tap(user => this.userSubject.next(user))
     );
+  }
+
+  redirectToDashboard(user: User, router: Router, toastService: ToastService) {
+    if (user.role?.includes('ROLE_ADMIN')) {
+      toastService.showToast('Redirigiendo a panel de administrador', 'info', 3000);
+      router.navigate(['/admin-dashboard']);
+    } else {
+      toastService.showToast('Redirigiendo a panel de usuario', 'info', 3000);
+      router.navigate(['/user-dashboard']);
+    }
   }
 
   list(): Observable<User[]> {

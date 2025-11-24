@@ -6,12 +6,13 @@ import { BookingService } from '../../shared/services/bookingService/booking.ser
 import { TimeslotsService, Timeslot } from '../../shared/services/timeslotsService/timeslots.service';
 import { AuthService } from '../../shared/services/authService/auth.service';
 import { CalendarComponent } from '../../shared/components/calendar/calendar.component';
+import { ToastService } from '../../shared/services/toastService/toast.service';
 
 
 @Component({
   selector: 'app-userpanel',
   standalone: true,
-  imports: [ CommonModule, FormsModule, CalendarComponent ],
+  imports: [ CommonModule, FormsModule, CalendarComponent, ],
   templateUrl: './userpanel.component.html',
   styleUrl: './userpanel.component.css'
 })
@@ -32,6 +33,7 @@ export class UserpanelComponent implements OnInit {
     private authService: AuthService,
     private bookingService: BookingService,
     private timeslotsService: TimeslotsService,
+    private toastService: ToastService,
   ) {}
 
   // INIT
@@ -91,7 +93,7 @@ export class UserpanelComponent implements OnInit {
       next: res => {
         this.bookingsOfSelectedDay = res.bookings;
       },
-      error: err => console.error("❌ Error al cargar día:", err)
+      error: err => console.error("Error al cargar día:", err)
     });
   }
 
@@ -127,7 +129,7 @@ export class UserpanelComponent implements OnInit {
 
     this.bookingService.create(payload).subscribe({
       next: (res) => this.handleBookingSuccess(res),
-      error: (err) => console.error("Error al crear reserva:", err)
+      error: (err) => this.toastService.showToast('Error al realizar la reserva','error',3000),
     });
   }
 
@@ -157,7 +159,7 @@ export class UserpanelComponent implements OnInit {
   }
 
   private handleBookingSuccess(res: any) {
-    console.log("Reserva creada correctamente:", res);
+    this.toastService.showToast('Reserva creada correctamente','success',3000);
     this.selectDay(this.selectedDate!);
     this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) + 1;
     this.cancelSlotSelection();
