@@ -58,6 +58,7 @@ export class AdminpanelComponent implements OnInit {
   private initCalendar() {
     const today = new Date();
     this.loadMonth(today.getFullYear(), today.getMonth() + 1);
+    this.loadDay(today)
   }
 
   onMonthChanged({ year, month }: { year: number; month: number }) {
@@ -69,6 +70,36 @@ export class AdminpanelComponent implements OnInit {
     this.bookingService.getMonth(month, year).subscribe(res => {
       this.days = res.days;
     });
+  }
+
+  private loadDay (today: Date){
+      const formattedtoday = this.formatDate(new Date());
+
+      if (!this.closedDays.includes(formattedtoday)) {
+        this.selectDay(formattedtoday);
+      }
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+    formatTitleDate(dateString: string): string {
+    const date = new Date(dateString);
+
+    const formatter = new Intl.DateTimeFormat('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    const formatted = formatter.format(date);
+
+    // Capitalizar primera letra del mes
+    return formatted.replace(
+      / de ([a-záéíóú]+)/,
+      (match, month) => ` de ${month.charAt(0).toUpperCase()}${month.slice(1)}`
+    );
   }
 
   private clearSelectedDay() {

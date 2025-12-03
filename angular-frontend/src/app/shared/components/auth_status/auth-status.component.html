@@ -8,18 +8,20 @@
                 <button 
                     *ngIf="!isInPanel"
                     (click)="goToDashboard()" 
-                    class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-primary flex items-center">
+                    class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-primary flex items-center"
+                    title="Ir al panel de Usuario">
                         Hola, {{  currentUser.username }}
                 </button>
                 <span *ngIf="isInPanel"
                     class="text-stone-100 text-xs md:text-sm line-clamp-2">
-                Hola, {{ currentUser.username }}
+                        Hola, {{ currentUser.username }}
                 </span>
 
                 <div class="flex flex-row items-center space-x-2 md:space-x-2 md:flex-column md:itemn">
                     <button 
                         routerLink="/"
-                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm bg-blue-500 hover:bg-blue-400 text-white rounded flex items-center shadow">
+                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm bg-blue-500 hover:bg-blue-400 text-white rounded flex items-center shadow"
+                        title="Ir a la página principal"> 
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-5 w-5"
                             fill="currentColor"
@@ -29,7 +31,8 @@
                     </button>
 
                     <button (click)="logout()"
-                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-secondary flex items-center">
+                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-secondary flex items-center"
+                        title="Cerrar Sesión">
 
                         <svg *ngIf="!isLoading"
                             xmlns="http://www.w3.org/2000/svg"

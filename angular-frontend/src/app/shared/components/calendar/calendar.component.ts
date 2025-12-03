@@ -12,6 +12,7 @@ export class CalendarComponent implements OnInit {
     @Input () month = new Date().getMonth() + 1;
     @Input() days: { [date: string]: number } = {};
     @Input() closedDays: string[] = [];
+    @Input() userBookingDays: string[] = [];
 
     @Output() daySelected = new EventEmitter<string>();
     @Output() monthChanged = new EventEmitter<{ year: number, month: number }>();
@@ -60,17 +61,15 @@ export class CalendarComponent implements OnInit {
     getDayColor(day: string): string {
         if (!day) return 'bg-transparent';
         if (this.isClosedDay(day)) return 'bg-black text-white';
+        if (this.userBookingDays.includes(day)) return 'bg-blue-500 text-white hover:bg-blue-600';
 
         const count = this.days[day] || 0;
 
         if (count === 0) return 'bg-green-500 hover:bg-green-600';
-        if (count <= 2) return 'bg-green-300 hover:bg-green-400';
-        if (count <= 3) return 'bg-yellow-200 hover:bg-yellow-300';
-        if (count <= 4) return 'bg-yellow-300 hover:bg-yellow-400';
-        if (count <= 6) return 'bg-orange-300 hover:bg-orange-400';
-        if (count === 7) return 'bg-red-400 hover:bg-red-500';
+        if (count <= 4) return 'bg-green-300 hover:bg-green-400';
+        if (count <= 7) return 'bg-yellow-500 hover:bg-yellow-600';
 
-        return 'bg-red-600 hover:bg-red-700';
+        return 'bg-red-500 hover:bg-red-600';
     }
 
     isClosedDay(day: string): boolean {

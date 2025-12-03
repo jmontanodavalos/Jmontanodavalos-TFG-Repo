@@ -29,10 +29,8 @@ export class AuthService {
 
   redirectToDashboard(user: User, router: Router, toastService: ToastService) {
     if (user.role?.includes('ROLE_ADMIN')) {
-      toastService.showToast('Redirigiendo a panel de administrador', 'info', 3000);
       router.navigate(['/admin-dashboard']);
     } else {
-      toastService.showToast('Redirigiendo a panel de usuario', 'info', 3000);
       router.navigate(['/user-dashboard']);
     }
   }
@@ -44,12 +42,10 @@ export class AuthService {
   loadUser() {
     this.http.get<User>(AUTH_ROUTES.me(), { withCredentials: true }).subscribe({
       next: user => {
-        console.log('Usuario cargado:', user);
         this.userSubject.next(user);
         this.loadedSubject.next(true);
       },
       error: err => {
-        console.warn('Error loading user:', err);
         this.userSubject.next(null);
         this.loadedSubject.next(true);
       }
@@ -60,7 +56,6 @@ export class AuthService {
     return this.http.post(AUTH_ROUTES.logout(), {}, { withCredentials: true }).pipe(
       tap(() => {
         this.userSubject.next(null);
-        console.log('Sesión cerrada correctamente');
       })
     );
   }
