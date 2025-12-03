@@ -27,6 +27,7 @@ export class UserpanelComponent implements OnInit {
   days: { [date: string]: number } = {};
   closedDays: string[] = [];
   slotSelected = false;
+  userBookingDays: string[] = [];
   
 
   constructor(
@@ -63,6 +64,7 @@ export class UserpanelComponent implements OnInit {
   private initCalendar() {
     const today = new Date();
     this.loadMonth(today.getFullYear(), today.getMonth() + 1);
+    this.loadDay(today)
   }
 
   // CALENDARIO
@@ -74,9 +76,42 @@ export class UserpanelComponent implements OnInit {
 
   private loadMonth(year: number, month: number) {
     this.bookingService.getMonth(month, year).subscribe({
-      next: res => this.days = res.days,
+      next: res => {
+        this.days = res.days;
+        this.userBookingDays = res.userBookingDays;
+      },
       error: err => console.error("Error al cargar mes:", err)
     });
+  }
+
+  private loadDay (today: Date){
+      const formattedtoday = this.formatDate(new Date());
+
+      if (!this.closedDays.includes(formattedtoday)) {
+        this.selectDay(formattedtoday);
+      }
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  formatTitleDate(dateString: string): string {
+    const date = new Date(dateString);
+
+    const formatter = new Intl.DateTimeFormat('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    const formatted = formatter.format(date);
+
+    // Capitalizar primera letra del mes
+    return formatted.replace(
+      / de ([a-záéíóú]+)/,
+      (match, month) => ` de ${month.charAt(0).toUpperCase()}${month.slice(1)}`
+    );
   }
 
   private clearSelectedDay() {

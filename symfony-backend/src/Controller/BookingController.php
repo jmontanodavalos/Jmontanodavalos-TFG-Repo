@@ -60,6 +60,12 @@ class BookingController extends AbstractController
     #[Route('/month', name: 'bookings_month', methods: ['GET'])]
     public function getMonth(Request $request, EntityManagerInterface $em): JsonResponse
     {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->json(['error' => 'No autenticado'], Response::HTTP_UNAUTHORIZED);
+        }
+
         $year = (int) $request->query->get('year', date('Y'));
         $month = (int) $request->query->get('month', date('m'));
 
@@ -67,32 +73,37 @@ class BookingController extends AbstractController
             return $this->json(['error' => 'Mes inválido'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Primer y último día del mes
         $start = new \DateTime("$year-$month-01");
         $end = (clone $start)->modify('last day of this month');
 
-        // Consultar solo fechas y cantidad de reservas por día
         $qb = $em->createQueryBuilder()
-            ->select('b.date AS day, COUNT(b.id) AS total')
+            ->select('b.date AS day, COUNT(b.id) AS total, 
+                    SUM(CASE WHEN b.student = :user THEN 1 ELSE 0 END) AS userBookings')
             ->from(Booking::class, 'b')
             ->where('b.date BETWEEN :start AND :end')
             ->setParameter('start', $start)
             ->setParameter('end', $end)
+            ->setParameter('user', $user)
             ->groupBy('b.date')
             ->orderBy('b.date', 'ASC');
 
         $results = $qb->getQuery()->getResult();
 
-        // Transformar resultado: clave = día, valor = cantidad
         $data = [];
+        $userBookingDays = [];
         foreach ($results as $r) {
-            $data[$r['day']->format('Y-m-d')] = (int) $r['total'];
+            $day = $r['day']->format('Y-m-d');
+            $data[$day] = (int)$r['total'];
+            if ((int)$r['userBookings'] > 0) {
+                $userBookingDays[] = $day;
+            }
         }
 
         return $this->json([
             'month' => $month,
             'year' => $year,
-            'days' => $data
+            'days' => $data,
+            'userBookingDays' => $userBookingDays
         ]);
     }
 

@@ -12,5 +12,5 @@ export interface User {
   phone: string;
   password?: string;
   role: string;
-  subjects: Subject[]; //Array de Subjects
+  subjects: Subject[];
 }

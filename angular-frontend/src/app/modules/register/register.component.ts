@@ -4,7 +4,6 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../shared/services/authService/auth.service';
 import { RegisterDTO } from '../../shared/interfaces/RegisterDTO';
-import { BackButtonComponent } from '../../shared/components/back_button/back-button.component';
 import { SubjectService } from '../../shared/services/subjectService/subject.service';
 import { ToastService } from '../../shared/services/toastService/toast.service';
 
@@ -16,7 +15,6 @@ import { ToastService } from '../../shared/services/toastService/toast.service';
    FormsModule,
    ReactiveFormsModule,
    RouterLink,
-   BackButtonComponent,
  ],
  templateUrl: './register.component.html',
  styleUrls: []

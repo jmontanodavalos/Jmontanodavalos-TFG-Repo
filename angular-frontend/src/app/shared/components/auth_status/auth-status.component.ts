@@ -27,6 +27,9 @@ export class AuthStatusComponent implements OnInit {
       this.isInPanel = currentUrl.includes('admin-dashboard') || currentUrl.includes('user-dashboard');
     });
 
+    this.isInPanel = this.router.url.includes('admin-dashboard') || 
+                 this.router.url.includes('user-dashboard');
+
     this.authService.currentUser$.subscribe(user => {
       this.user = user;
     });
