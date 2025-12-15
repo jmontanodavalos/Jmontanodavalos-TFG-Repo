@@ -60,7 +60,7 @@ class UserController extends AbstractController
         $data = array_map(fn(User $u) => [
             'id' => $u->getId(),
             'username' => $u->getUsername(),
-            'fullname' => $u->getFullname(),
+            'full_name' => $u->getFullname(),
             'email' => $u->getEmail(),
             'roles' => $u->getRoles(),
             'phone' => $u->getPhone(),
@@ -85,7 +85,7 @@ class UserController extends AbstractController
         return $this->json([
             'id' => $user->getId(),
             'username' => $user->getUsername(),
-            'fullname' => $user->getFullname(),
+            'full_name' => $user->getFullname(),
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
             'phone' => $user->getPhone(),
@@ -143,7 +143,7 @@ class UserController extends AbstractController
             'user' => [
                 'id' => $user->getId(),
                 'username' => $user->getUsername(),
-                'fullname' => $user->getFullname(),
+                'full_name' => $user->getFullname(),
                 'email' => $user->getEmail(),
                 'roles' => $user->getRoles(),
                 'phone' => $user->getPhone(),
@@ -210,7 +210,7 @@ class UserController extends AbstractController
             'user' => [
                 'id' => $user->getId(),
                 'username' => $user->getUsername(),
-                'fullname' => $user->getFullname(),
+                'full_name' => $user->getFullname(),
                 'email' => $user->getEmail(),
                 'roles' => $user->getRoles(),
                 'phone' => $user->getPhone(),
