@@ -197,6 +197,9 @@ export class UserpanelComponent implements OnInit {
     this.toastService.showToast('Reserva creada correctamente','success',3000);
     this.selectDay(this.selectedDate!);
     this.days[this.selectedDate!] = (this.days[this.selectedDate!] || 0) + 1;
+    if (!this.userBookingDays.includes(this.selectedDate!)) {
+      this.userBookingDays = [...this.userBookingDays, this.selectedDate!];
+    }
     this.cancelSlotSelection();
   }
 
