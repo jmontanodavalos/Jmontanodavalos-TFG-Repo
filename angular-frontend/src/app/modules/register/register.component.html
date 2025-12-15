@@ -32,6 +32,7 @@
             <input type="tel" id="phone" name="phone" formControlName="phone"
                 class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500">
             <div *ngIf="phone?.invalid && phone?.touched" class="text-red-500 text-xs mt-1">
+                <span *ngIf="phone?.errors?.['required']">El teléfono es obligatorio.</span>
                 <span *ngIf="phone?.errors?.['pattern']">Por favor, introduce un número de teléfono válido.</span>
             </div>
         </div>
