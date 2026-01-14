@@ -1,0 +1,14 @@
+<div class="bg-[#E9653D] w-full h-300 flex flex-col md:flex-row items-start md:items-center justify-start md:justify-center py-8 fixed top-0 left-0 z-50 px-4 md:px-0">
+    <ng-container *ngIf="showAuthStatus()">
+        <app-auth-status></app-auth-status>
+    </ng-container>
+    <ng-container *ngIf="showBackButton()">
+        <app-back-button></app-back-button>
+    </ng-container>
+    <div class="flex-1 max-w-[calc(100%-100px)] md:max-w-full">
+        <h1 class="text-left md:text-center text-2xl md:text-3xl font-roadbrush tracking-tight text-slate-900 break-words 
+        overflow-hidden line-clamp-2">
+        CENTRO EDUCATIVO EDÉN
+        </h1>
+    </div>
+</div>

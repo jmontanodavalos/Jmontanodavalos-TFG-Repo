@@ -1,0 +1,73 @@
+  <div class=" text-stone-200 text-xs font-medium md:text-sm
+         fixed top-1 right-0 mr-2 md:mr-0 z-50 flex flex-col items-end md:flex-row md:items-center md:absolute md:top-2 md:right-2 md:translate-x-0">
+
+    <div class="flex space-y-2 flex-col items-end mt-2 md:gap-2 md:flex-row md:items-center">
+        <ng-container *ngIf="user as currentUser; else notLoggedIn">
+            <div class="flex flex-col items-end space-y-1
+              md:flex-row md:items-center md:space-y-0 md:space-x-2">
+                <button 
+                    *ngIf="!isInPanel"
+                    (click)="goToDashboard()" 
+                    class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-primary flex items-center"
+                    title="Ir al panel de Usuario">
+                        Hola, {{  currentUser.username }}
+                </button>
+                <span *ngIf="isInPanel"
+                    class="text-stone-100 text-xs md:text-sm line-clamp-2">
+                        Hola, {{ currentUser.username }}
+                </span>
+
+                <div class="flex flex-row items-center space-x-2 md:space-x-2 md:flex-column md:itemn">
+                    <button 
+                        routerLink="/"
+                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm bg-blue-500 hover:bg-blue-400 text-white rounded flex items-center shadow"
+                        title="Ir a la página principal"> 
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path d="M12 3l9 9h-3v9h-12v-9h-3z"/>
+                        </svg>
+                    </button>
+
+                    <button (click)="logout()"
+                        class="px-1 py-1 md:px-2 md:py-2 text-xs md:text-sm btn-secondary flex items-center"
+                        title="Cerrar Sesión">
+
+                        <svg *ngIf="!isLoading"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 mr-2"
+                            viewBox="0 0 24 24"
+                            role="img"
+                            aria-hidden="false"
+                            aria-label="Cerrar sesión">
+                            <path fill="currentColor" d="M16 13v-2H7V8l-5 4 5 4v-3z"></path>
+                            <path fill="currentColor" d="M20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+                        </svg>
+
+                        <svg *ngIf="isLoading"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="animate-spin h-5 w-5 mr-2"
+                            viewBox="0 0 24 24"
+                            role="status"
+                            aria-hidden="true">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+
+                        <!-- Texto sólo para lectores de pantalla -->
+                        <span class="sr-only">Cerrar sesión</span>
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    
+    <ng-template #notLoggedIn>
+        <div class="flex flex-col items-center md:gap-2 space-y-1 md:space-y-0 md:flex-row md:items-center">
+            <button routerLink="/login" class="px-1 py-1 md:px-4 md:py-2 text-xs md:text-sm btn-primary mr-2">Iniciar sesión</button>
+            <button routerLink="/register" class="px-1 py-1 md:px-3 md:py-2 text-xs md:text-sm btn-secondary">Registrarse</button>
+        </div>
+    </ng-template>
+    
+  </div>

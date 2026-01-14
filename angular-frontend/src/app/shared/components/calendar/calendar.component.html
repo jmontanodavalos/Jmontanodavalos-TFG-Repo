@@ -1,0 +1,40 @@
+<div class="flex flex-col gap-2">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-2">
+    <button (click)="prevMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&lt;</button>
+    <h2 class="text-xl font-bold">
+      {{ month | number:'2.0' }} - {{ year }}
+    </h2>
+    <button (click)="nextMonth()" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">&gt;</button>
+  </div>
+
+  <!-- Week header -->
+  <div class="grid grid-cols-7 text-center font-semibold gap-5 mb-1">
+    <div>Lun</div>
+    <div>Mar</div>
+    <div>Mié</div>
+    <div>Jue</div>
+    <div>Vie</div>
+    <div>Sáb</div>
+    <div>Dom</div>
+  </div>
+
+  <!-- Days -->
+  <div class="grid grid-cols-7 gap-x-6 gap-y-2">
+    <div *ngFor="let day of getDaysInMonth()"
+         class="py-1.5 px-4 flex items-center justify-center rounded
+                transition-transform duration-200"
+         [ngClass]="[
+           day ? getDayColor(day) : 'bg-transparent',
+           day && isToday(day) ? 'underline font-bold' : '',
+           day && isClosedDay(day)
+             ? 'cursor-not-allowed'
+             : day
+               ? 'cursor-pointer hover:scale-110'
+               : ''
+         ]"
+         (click)="day && !isClosedDay(day) && selectDay(day)">
+      {{ day ? day.split('-')[2] : '' }}
+    </div>
+  </div>
+</div>

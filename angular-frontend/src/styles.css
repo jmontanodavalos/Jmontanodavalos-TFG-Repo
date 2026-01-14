@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'KTF Roadbrush';
+  src: url('assets/fonts/KTF-Roadbrush.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center text-center rounded-lg bg-green-400 text-black px-4 py-2 text-sm font-medium shadow-sm
+         hover:bg-green-300 active:bg-green-500 hover:cursor-pointer focus-visible:outline focus-visible:outline-offset-2
+         focus-visible:outline-slate-500 disabled:opacity-50
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center text-center rounded-lg bg-stone-300 text-black px-3 py-2 text-sm font-medium shadow-sm 
+         hover:bg-stone-200 active:bg-stone-500 hover:cursor-pointer focus-visible:outline focus-visible:outline-offset-2 
+         focus-visible:outline-green-500 disabled:opacity-50  
+    }
+
+  .btn-delete {
+    @apply inline-flex items-center text-center rounded-lg bg-red-200 text-black px-2 py-1 text-xs font-medium shadow-sm
+         hover:bg-red-100 active:bg-red-500 hover:cursor-pointer focus-visible:outline focus-visible:outline-offset-2 
+         focus-visible:outline-red-400
+  }
+
+  .input-primary {
+    @apply rounded-lg border border-slate-500 bg-white px-3 py-2 text-sm placeholder:text-stone-600 text-slate-900 focus:border-transparent 
+           focus:ring-2 focus:ring-indigo-500/60 
+
+  }
+
+  .error-text {
+    @apply text-red-600 text-sm mt-1
+  }
+}

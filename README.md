@@ -16,8 +16,8 @@ Antes de comenzar, asegúrate de tener instalados en tu sistema:
 ### 1. Clonar el repositorio
 Ejecuta el siguiente comando para clonar el proyecto:
 ```bash
-git clone git@github.com:campus-CodeArts/Onboarding-SymfAngular.git
-cd Onboarding-SymfAngular
+git clone git@github.com:jmontanodavalos/Jmontanodavalos-TFG-Repo.git
+cd ProyectoAcademiaEden
 ```
 
 ### 2. Levantar los contenedores
@@ -67,3 +67,16 @@ docker compose down -v
 ⚠️ **Advertencia:** Esto eliminará todos los datos almacenados en la base de datos PostgreSQL. ⚠️ 
 
 ---
+
+## Comandos útiles
+
+- Para acceder al contenedor del Frontend Angular:
+```
+  docker exec -it angular_frontend sh
+```
+
+- Para acceder al contenedor del Backend Symfony:
+```
+docker exec -it symfony_backend bash
+
+```

@@ -1,0 +1,17 @@
+<div class="fixed top-12 left-1/2 transform -translate-x-1/2 z-50 space-y-3 w-full max-w-sm px-4 sm:right-4 sm:left-auto sm:transform-none transition-all duration-500 ease-in-out">
+  <ng-container *ngFor="let toast of toasts">
+    <div
+      class="toast animate-fade-in-top flex items-center justify-between w-full p-4 rounded-lg shadow-lg text-white"
+      [ngClass]="{
+        'bg-green-500': toast.type === 'success',
+        'bg-red-500': toast.type === 'error',
+        'bg-blue-500': toast.type === 'info'
+      }"
+      (mouseenter)="pauseToast(toast)"
+      (mouseleave)="resumeToast(toast)"
+    >
+      <span>{{ toast.message }}</span>
+      <button class="ml-4 font-bold hover:text-gray-200" (click)="removeToast(toast)">✖</button>
+    </div>
+  </ng-container>
+</div>
